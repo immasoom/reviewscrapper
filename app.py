@@ -18,25 +18,33 @@ def index():
         try:
             searchString = request.form['content'].replace(" ","")
             flipkart_url = "https://www.flipkart.com/search?q=" + searchString
+            print("flipkart_url:",flipkart_url)
             uClient = uReq(flipkart_url)
             flipkartPage = uClient.read()
             uClient.close()
             flipkart_html = bs(flipkartPage, "html.parser")
+            print("area2")
             bigboxes = flipkart_html.findAll("div", {"class": "_1AtVbE col-12-12"})
+            print("length:",len(bigboxes))
+            print("area22")
             del bigboxes[0:3]
             box = bigboxes[0]
+            print("area33")
             productLink = "https://www.flipkart.com" + box.div.div.div.a['href']
             prodRes = requests.get(productLink)
             prodRes.encoding='utf-8'
             prod_html = bs(prodRes.text, "html.parser")
             print(prod_html)
+            print("area4")
             commentboxes = prod_html.find_all('div', {'class': "_16PBlm"})
+            print("area5")
 
             filename = searchString + ".csv"
             fw = open(filename, "w")
             headers = "Product, Customer Name, Rating, Heading, Comment \n"
             fw.write(headers)
             reviews = []
+            print("length:",len(commentboxes))
             for commentbox in commentboxes:
                 try:
                     #name.encode(encoding='utf-8')
@@ -79,5 +87,5 @@ def index():
         return render_template('index.html')
 
 if __name__ == "__main__":
-    #app.run(host='127.0.0.1', port=8001, debug=True)
-	app.run(debug=True)
+    app.run(host='127.0.0.1', port=8001, debug=True)
+	#app.run(debug=True)
